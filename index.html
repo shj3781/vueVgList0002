@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <title>GameBrain Library</title>
+</head>
+<body>
+  <div class="container">
+    <div id="games-list">
+      <h1>{{ title }}</h1>
+      <select v-on:change="filterList">
+        <option value="">Select a series...</option>
+<!--
+  OKAY.  Here's where sh!t starts to get really murky and unclarified
+  and, well, confusing af. I'm using another "v-for" directive on the
+  <option> element directly below; BUT!  It seems as if I have to be 
+  very careful with the keywords I use to target stuff.  The purpose
+  of this particular "v-for" is to start filtering out (or back in) 
+  displayed results if one were to select certain options from the
+  drop-down menu (which was created above w/the <select> element).
+  Where it gets problematic, however, is when it comes to picking
+  and choosing your 'placeholder' words that are the best fit and
+  the most descriptive, as well as remembering which object/array/
+  property to which you must also correctly target to get things
+  working the way you need.  AKA, the results I finally got took
+  a lot of trial and error and frustration and hair-pulling and
+  wailing and gnashing of teeth, etc.
+
+  And on a semi-side note, the "v-for" directive here also 
+  utilizes a thing that Vue can do called 'Computed Properties,'
+  which assist in the performance of complex calculations and/or
+  operations that are involved with the display (or witholding of)
+  your various content of your project.  The "uniqueItemsList" 
+  referenced below contains a function which is the value (itself 
+  contained in an object) of a 'computed' property in the Vue 
+  'instance' in 'app.js' that is complicated and complex indeed.
+-->
+        <option v-for="series in uniqueItemsList">
+          {{ series }}
+        </option>
+      </select>
+      
+      <div class="flashcard-form">
+      <label for="addTitle">Add a Game Title
+<!-- 
+  What appears below is the "v-model" directive as per the
+  objectives of step [3b], which bind the user-
+  submitted info to become the respective values for the 
+  'newFront' and 'newBack' of a new flash card.
+
+  To round out the rest of what you're wanting to do as per
+  the objectives of step [3] as a whole, the "v-on" directive
+  also gets added to one of the <input> elements, as well as
+  the <button> element.
+-->
+        <input v-on:keypress.enter="addNew"
+               v-model="newGame" 
+               type="text" 
+               id="new">
+      </label>
+      <button v-on:click="addNew">
+        Add a New Game
+      </button>
+      <button v-on:click="editGame(gamesList.title, game._id)" 
+              class="btn btn-default" 
+              type="button">
+        Edit Game
+      </button>
+      <button v-on:click="deleteTask(todo._id)" 
+              class="btn btn-danger">
+        Delete
+      </button>
+    </div>
+      
+<!-- 
+  Directly below is a <ul> element containing a single <li> element, 
+  which will be used to display and add functionality to whatever 
+  number of items your list/library/etc. contains.  It's IMPORTANT!!!
+  to note that some dot notation is going on here as well, in order
+  to target deeper and more specifically into your array and its
+  objects that it contains.  Which is not something I completely
+  understand yet, but I'm trying to.
+
+  Additionally, the "v-for" and "v-on" directives are making 
+  appearances here as well.  The "game in gamesList" statement
+  is the standard syntax of the former, which loops through the 
+  items of the array in the 'app.js' file, much in the same way
+  a standard javaScript "for in" loop does.
+
+  The "v-show" directive which is also part of the <li> element 
+  nearly drove me completely into the looney bin.  It seems that
+  once you declare the so-called 'placeholder' in the "v-for" 
+  directive statement, which in this case is "game," then that's
+  the one you need to stick with if you're using more/other
+  directives for the same element.  It would've been a lot 
+  cooler if that had been explicitly stated that that was a 
+  thing.
+
+  The "v-on:click" is effectively an event handler, and the value
+  of which is a declared function whose parameter is the very same 
+  "game" referenced in "game in gamesList" in order to correctly 
+  display the things you want displayed as per the "toggleDetails"
+  function, which is in the 'app.js' file.  
+-->
+        <ul>
+          <li v-for="game in gamesList"
+              v-show="series === '' || series === game.series"  
+              v-on:click="toggleDetails(game)"
+              v-bind:class=
+              "{less: game.showDetail, more: !game.showDetail}">
+            <h3>{{ game.subtitle }}</h3> 
+            <div v-show="game.showDetail">
+              <p>{{ game.summary.year }}</p>
+              <p>{{ game.summary.platform }}</p>
+              <p>{{ game.summary.history }}</p>
+              <p class="byline">
+                Published By: {{ game.summary.publisher }}
+              </p>
+            </div>
+          </li>
+        </ul>
+      
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.5.13/dist/vue.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
